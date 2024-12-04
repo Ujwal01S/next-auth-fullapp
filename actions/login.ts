@@ -1,5 +1,6 @@
 "use server";
 
+import bcrypt from "bcryptjs";
 import { signIn } from "@/auth";
 import { getUserByEmail } from "@/data/user";
 import { sendVerificationEmail, sendTwoFactorTokenEmail } from "@/lib/mail";
@@ -25,6 +26,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
 
   const existingUser = await getUserByEmail(email);
 
+
   if (!existingUser || !existingUser.email || !existingUser.password) {
     return { error: "Email does not exist !" };
   }
@@ -45,6 +47,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
 
   if(existingUser.isTwoFactorEnabled && existingUser.email){
     if(code) {
+
       const twoFactorToken = await getTwoFactorTokenByEmail(
         existingUser.email
       );
@@ -81,6 +84,11 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
       });
 
     }else{
+      const passwordMatch = await bcrypt.compare(password, existingUser.password);
+
+      if(!passwordMatch){
+        return {error: "Invalid password"}
+      }
 
       const twoFactorToken = await generateTwoFactorToken(existingUser.email);
       

@@ -9,6 +9,7 @@ import { getAccountByUserId } from "./data/account";
 
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
+  ...authConfig,
   pages: {
     // next auth shows other page to display signin and error, so create path and folder yourself
 
@@ -108,5 +109,5 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
-  ...authConfig,
+  
 });

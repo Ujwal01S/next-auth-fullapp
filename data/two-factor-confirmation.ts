@@ -9,6 +9,6 @@ export const getTwoFactorConfirmationByUserId = async(userId:string) => {
         
         return twoFactorConfirmation;
     } catch (error) {
-        return null;
+        return;
     }
 };
