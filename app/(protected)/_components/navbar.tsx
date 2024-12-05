@@ -2,11 +2,32 @@
 
 import { UserButton } from "@/components/auth/user-button";
 import { Button } from "@/components/ui/button";
+import { useCurrentRole } from "@/hooks/user-current-role";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+
 
 const Navbar = () => {
+  const [currentRole, setCurrentRole] = useState<string | undefined>("");
   const pathname = usePathname();
+  const role = useCurrentRole();
+  const {data, update} = useSession();
+
+  console.log(data?.user);
+  
+
+  useEffect(() => {
+    update();
+    if(role){
+      const routeRole = role?.toLocaleLowerCase();
+      setCurrentRole(routeRole);
+    }
+  }, [role])
+
+  console.log(currentRole);
+
 
   return (
     <nav className="bg-secondary flex justify-between items-center p-4 rounded-xl w-[600px] shadow-md">
@@ -29,7 +50,7 @@ const Navbar = () => {
           asChild
           variant={pathname === "/admin" ? "default" : "outline"}
         >
-          <Link href="/admin">Admin</Link>
+          <Link href={`${currentRole === "admin" ? "/admin-content": `${currentRole}`}`}>{currentRole}</Link>
         </Button>
 
         <Button
@@ -38,7 +59,9 @@ const Navbar = () => {
         >
           <Link href="/settings">Settings</Link>
         </Button>
+
       </div>
+
 
       <UserButton />
     </nav>
